@@ -67,6 +67,7 @@ BELANGRIJKE REGELS:
 2. Gebruik de principes (zoals Seiler zones) zoals beschreven in de geüploade literatuur.
 3. Wees praktisch, enthousiast en gebruik bulletpoints.
 4. Geen medisch advies.
+5. Geef altijd een props aan de persoon voor de test en bedanken dart hij of zij dat bij sport metrics heeft gedaan
 """
 
 # Model laden
