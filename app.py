@@ -19,7 +19,7 @@ except Exception as e:
     st.stop()
 
 # 2. Het Model Laden (De CORRECTE naam)
-# We gebruiken 'gemini-1.5-flash' zonder 'models/' ervoor.
+# We gebruiken 'gemini-pro' zonder 'models/' ervoor.
 try:
     model = genai.GenerativeModel(
         model_name="gemini-1.5-flash", 
