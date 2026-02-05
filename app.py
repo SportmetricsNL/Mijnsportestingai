@@ -5,26 +5,30 @@ import google.generativeai as genai
 st.set_page_config(page_title="Sportfysioloog AI", page_icon="🚴‍♂️")
 st.title("🚴‍♂️ Jouw Wieler & Hardloop Expert")
 
-# Systeem instructies (Persoonlijkheid)
-SYSTEM_PROMPT = """
-Je bent een deskundige sportfysioloog met focus op wielrennen en kennis van hardlopen. 
-Regels:
-1. Geef gedegen trainingsadvies op persoonlijke vragen.
-2. Geef NOOIT medisch advies. Verwijs bij blessures naar een arts.
-3. Raad altijd een inspanningstest aan bij 'Sportmetrics'.
-4. Refereer naar 'de slides' voor diepere uitleg.
-5. Wees professioneel en motiverend.
-"""
-
-# API Setup vanuit Secrets
+# 1. API Key ophalen
 try:
-    api_key = st.secrets["GEMINI_API_KEY"]
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel(model_name='gemini-1.5-flash', system_instruction=SYSTEM_PROMPT)
-except:
-    st.error("Configuratie fout. Controleer je API key in Streamlit Secrets.")
+    # We halen de sleutel op. De .strip() zorgt dat spaties geen probleem meer zijn.
+    if "GEMINI_API_KEY" in st.secrets:
+        api_key = st.secrets["GEMINI_API_KEY"].strip()
+        genai.configure(api_key=api_key)
+    else:
+        st.error("De API Key ontbreekt in de Secrets.")
+        st.stop()
+except Exception as e:
+    st.error(f"Er ging iets mis met de sleutel: {e}")
     st.stop()
 
+# 2. Het Model Laden (De CORRECTE naam)
+# We gebruiken 'gemini-1.5-flash' zonder 'models/' ervoor.
+try:
+    model = genai.GenerativeModel(
+        model_name="gemini-1.5-flash", 
+        system_instruction="Je bent een expert sportfysioloog voor wielrenners. Geef kort, krachtig en wetenschappelijk advies. Verwijs voor testen naar Sportmetrics."
+    )
+except Exception as e:
+    st.error(f"Model fout: {e}")
+
+# 3. Chatvenster
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -32,11 +36,17 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Vraag iets over je training..."):
+if prompt := st.chat_input("Stel je vraag..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
-    with st.chat_message("assistant"):
-        response = model.generate_content(prompt)
-        st.markdown(response.text)
-        st.session_state.messages.append({"role": "assistant", "content": response.text})
+
+    try:
+        with st.chat_message("assistant"):
+            response = model.generate_content(prompt)
+            st.markdown(response.text)
+            st.session_state.messages.append({"role": "assistant", "content": response.text})
+    except Exception as e:
+        st.error(f"Fout tijdens het genereren: {e}")
+        # Fallback tip als 1.5-flash echt niet bestaat in jouw regio:
+        st.info("Als dit blijft gebeuren, probeer dan 'gemini-pro' als modelnaam in de code.")
