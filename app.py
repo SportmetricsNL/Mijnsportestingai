@@ -1,7 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 import pypdf
-import docx  # Dit is de nieuwe bibliotheek voor Word-bestanden
+import docx
 import os
 
 # Pagina instellingen
@@ -25,8 +25,6 @@ except Exception as e:
 def load_all_knowledge():
     """Zoekt automatisch naar alle PDF en DOCX bestanden en leest ze."""
     combined_text = ""
-    files_found = []
-
     # We kijken in de huidige map naar alle bestanden
     for filename in os.listdir("."):
         try:
@@ -37,39 +35,36 @@ def load_all_knowledge():
                     text = page.extract_text()
                     if text:
                         combined_text += text + "\n"
-                files_found.append(filename)
             
             # Als het een Word bestand is
             elif filename.lower().endswith(".docx"):
                 doc = docx.Document(filename)
                 for para in doc.paragraphs:
                     combined_text += para.text + "\n"
-                files_found.append(filename)
                 
         except Exception as e:
             print(f"Kon bestand {filename} niet lezen: {e}")
 
-    return combined_text, files_found
+    return combined_text
 
-# Hier laden we alles in
-knowledge_base, loaded_files = load_all_knowledge()
+# Hier laden we alles in (gebeurt onzichtbaar voor de klant)
+knowledge_base = load_all_knowledge()
 
 # --- 3. DE AI INSTRUCTIES ---
 SYSTEM_PROMPT = f"""
 ROL: Je bent een expert sportfysioloog van SportMetrics.
 
 BRONMATERIAAL:
-Je hebt toegang tot de specifieke interne kennis van SportMetrics.
+Je hebt toegang tot specifieke literatuur over trainingsleer (zie hieronder).
 Gebruik DEZE INFORMATIE als de absolute waarheid.
-Wat in deze documenten staat, weegt zwaarder dan je algemene kennis.
 
-=== START INTERNE KENNISBANK ===
+=== START LITERATUUR ===
 {knowledge_base}
-=== EINDE INTERNE KENNISBANK ===
+=== EINDE LITERATUUR ===
 
 BELANGRIJKE REGELS:
 1. SportMetrics doet GEEN lactaatmetingen (prikken), alleen ademgasanalyse.
-2. Gebruik de Seiler-principes (3 en 5 zones) zoals beschreven in de geüploade documenten.
+2. Gebruik de principes (zoals Seiler zones) zoals beschreven in de geüploade literatuur.
 3. Wees praktisch, enthousiast en gebruik bulletpoints.
 4. Geen medisch advies.
 """
@@ -88,12 +83,8 @@ except Exception as e:
 if "messages" not in st.session_state:
     st.session_state.messages = []
     
-    # Welkomstbericht met check welke bestanden hij heeft gevonden
-    if loaded_files:
-        files_str = ", ".join(loaded_files)
-        intro = f"Hoi! Ik heb de volgende interne documenten gelezen: {files_str}. \n\nIk ben klaar voor je vragen!"
-    else:
-        intro = "Hoi! Ik ben klaar voor gebruik. (Ik heb nog geen documenten gevonden)."
+    # HIER IS DE AANGEPASTE BEGROETING:
+    intro = "Hoi! Ik geef antwoord op basis van mijn AI-kennis en de best beschikbare literatuur over trainingsleer. \n\nUpload je testresultaten of stel direct een vraag!"
     
     st.session_state.messages.append({"role": "assistant", "content": intro})
 
@@ -109,7 +100,7 @@ with st.expander("📄 Klik hier om een PDF Rapport te uploaden", expanded=False
                 client_pdf_text += page.extract_text() + "\n"
             
             st.session_state['last_uploaded_text'] = client_pdf_text
-            st.success("✅ Rapport ontvangen! De AI leest nu mee. Typ hieronder je vraag.")
+            st.success("✅ Rapport ontvangen! Typ hieronder je vraag.")
         except Exception as e:
             st.error(f"Fout bij lezen rapport: {e}")
 
