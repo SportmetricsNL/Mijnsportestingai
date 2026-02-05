@@ -1,34 +1,30 @@
 import streamlit as st
 import google.generativeai as genai
 
-# Pagina instellingen
 st.set_page_config(page_title="Sportfysioloog AI", page_icon="🚴‍♂️")
 st.title("🚴‍♂️ Jouw Wieler & Hardloop Expert")
 
-# 1. API Key ophalen
+# 1. API Key Check
 try:
-    # We halen de sleutel op. De .strip() zorgt dat spaties geen probleem meer zijn.
     if "GEMINI_API_KEY" in st.secrets:
         api_key = st.secrets["GEMINI_API_KEY"].strip()
         genai.configure(api_key=api_key)
     else:
-        st.error("De API Key ontbreekt in de Secrets.")
+        st.error("Geen API sleutel gevonden.")
         st.stop()
 except Exception as e:
-    st.error(f"Er ging iets mis met de sleutel: {e}")
-    st.stop()
+    st.error(f"Fout: {e}")
 
-# 2. Het Model Laden (De CORRECTE naam)
-# We gebruiken 'gemini-pro' zonder 'models/' ervoor.
+# 2. Model Laden (We gebruiken 'gemini-pro', die werkt altijd)
 try:
     model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash", 
-        system_instruction="Je bent een expert sportfysioloog voor wielrenners. Geef kort, krachtig en wetenschappelijk advies. Verwijs voor testen naar Sportmetrics."
+        model_name="gemini-pro", 
+        system_instruction="Je bent een sportfysioloog. Geef kort en concreet advies."
     )
 except Exception as e:
     st.error(f"Model fout: {e}")
 
-# 3. Chatvenster
+# 3. Chat
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -47,6 +43,4 @@ if prompt := st.chat_input("Stel je vraag..."):
             st.markdown(response.text)
             st.session_state.messages.append({"role": "assistant", "content": response.text})
     except Exception as e:
-        st.error(f"Fout tijdens het genereren: {e}")
-        # Fallback tip als 1.5-flash echt niet bestaat in jouw regio:
-        st.info("Als dit blijft gebeuren, probeer dan 'gemini-pro' als modelnaam in de code.")
+        st.error(f"Er ging iets mis: {e}")
