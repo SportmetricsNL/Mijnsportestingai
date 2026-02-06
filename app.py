@@ -106,7 +106,7 @@ try:
         api_key = st.secrets["GEMINI_API_KEY"].strip()
         genai.configure(api_key=api_key)
     else:
-        # Fallback voor lokaal testen als secrets file ontbreekt (haal dit weg in productie)
+        # Fallback voor lokaal testen als secrets file ontbreekt
         pass 
 except Exception as e:
     st.error(f"Error: {e}")
@@ -115,7 +115,6 @@ except Exception as e:
 @st.cache_resource(show_spinner=False)
 def load_all_knowledge():
     combined_text = ""
-    # Simpele check voor bestanden in huidige map
     for filename in os.listdir("."):
         try:
             if filename.lower().endswith(".pdf"):
@@ -181,8 +180,6 @@ def submit_question():
         extra_context = ""
         if "last_uploaded_text" in st.session_state:
             extra_context = f"\n\nHIER IS HET RAPPORT VAN DE KLANT:\n{st.session_state['last_uploaded_text']}\n\n"
-            # We verwijderen het niet direct zodat context blijft hangen voor vervolgvragen, 
-            # of je kan het hier wissen: del st.session_state["last_uploaded_text"]
 
         full_prompt = user_input + extra_context
         
@@ -245,4 +242,31 @@ with st.container():
 
     if analyse_click and "last_uploaded_text" in st.session_state:
         # Trigger een analyse prompt als men op de knop drukt
-        st.session_state.input_field = "Analyseer mijn geüploade zones
+        # DEZE REGEL VEROORZAAKTE DE FOUT, NU GECORRIGEERD:
+        st.session_state.input_field = "Analyseer mijn geüploade zones en maak een samenvatting."
+        submit_question()
+        st.rerun()
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# C. CHAT INTERFACE IN BLAUWE KADER
+with st.container():
+    st.markdown('<div class="chat-card">', unsafe_allow_html=True)
+    
+    # 1. History tonen
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+    
+    # 2. Input balk IN het kader (dus niet st.chat_input, maar st.text_input)
+    st.markdown("---") # Klein lijntje voor scheiding
+    st.text_input(
+        "Typ je vraag...", 
+        key="input_field", 
+        on_change=submit_question, 
+        placeholder="Stel je vraag of zeg 'Maak mijn zones'...",
+        label_visibility="collapsed"
+    )
+    st.caption("Druk op Enter om te versturen.")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
