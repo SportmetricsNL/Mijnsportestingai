@@ -12,106 +12,112 @@ st.set_page_config(
     layout="wide",
 )
 
-# Global look & feel (strak, blauwe achtergrond)
+# Global look & feel
 st.markdown(
     r"""
     <style>
       :root {
         --bg: linear-gradient(145deg, #061428 0%, #0a2f4a 55%, #0c4c63 100%);
-        --card: rgba(255, 255, 255, 0.05);
-        --border: rgba(255, 255, 255, 0.12);
         --text: #eef5ff;
         --muted: #b9c6da;
         --accent: #7be0ff;
+        --input-bg: rgba(255, 255, 255, 0.08);
       }
-      body, .stApp { background: var(--bg); color: var(--text); font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-      .block-container { padding: 1.5rem 2rem 2.5rem; max-width: 900px; }
+      body, .stApp { background: var(--bg); color: var(--text); font-family: "Inter", sans-serif; }
+      .block-container { padding: 2rem 2rem; max-width: 800px; }
       
-      /* CARDS STYLING */
+      /* --- 1. BALKEN WEGHALEN (TRANSPARANT) --- */
       .hero, .upload-card, .chat-card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 20px; /* Ronder */
-        padding: 1.5rem;
-        box-shadow: 0 20px 70px rgba(0,0,0,0.25);
-        margin-bottom: 1rem;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0.5rem 0;
+        margin-bottom: 0.5rem;
       }
 
-      /* HEADINGS */
-      .hero h1 { margin: 0 0 .35rem; font-weight: 700; color: var(--text); font-size: 32px; }
-      .hero p { color: var(--muted); font-size: 0.95rem; margin: 0.1rem 0 0; }
-
-      /* UPLOAD ZONE COMPACT & ROUND */
+      /* --- 2. UPLOAD KNOP SUPER COMPACT & ROND --- */
+      .stFileUploader { padding-top: 0px; }
+      .stFileUploader label { display: none; } /* Label 'Upload rapport' weg */
+      
       .stFileUploader div[data-testid="stFileDropzone"] { 
-        padding: 0.5rem 0.8rem; 
-        border-radius: 50px; /* Helemaal rond */
-        border: 1px dashed var(--muted);
-        min-height: 0px !important; /* Kleiner maken */
+        padding: 4px 10px !important; /* Heel weinig ruimte binnenin */
+        border-radius: 50px; /* Pilvorm */
+        border: 1px solid rgba(255,255,255,0.2);
+        background: var(--input-bg);
+        min-height: 0px !important;
+        height: 42px; /* Vaste kleine hoogte */
+        align-items: center;
       }
-      .stFileUploader div[data-testid="stFileDropzone"] div {
-         gap: 0px;
-      }
-      .stFileUploader small { display: none; } /* Verberg 'limit 200mb' tekst voor compactheid */
+      
+      /* Tekst binnen upload kleiner */
+      .stFileUploader div[data-testid="stFileDropzone"] div { font-size: 14px; gap: 5px; }
+      .stFileUploader small { display: none; } /* 'Limit 200MB' tekst weg */
+      .stFileUploader button { display: none; } /* 'Browse files' knop weg, dropzone is genoeg */
 
-      /* ANALYSEER KNOP (Zwart, Rond, Wit/Blauw) */
+      /* --- 3. ANALYSEER KNOP --- */
       .stButton button { 
         width: 100%; 
-        border-radius: 50px !important; /* Rond knopje */
+        border-radius: 50px !important;
         background-color: #eef5ff !important; 
-        color: #000000 !important; /* Zwarte tekst */
-        font-weight: 700;
+        color: #000000 !important;
+        font-weight: 600;
+        font-size: 14px;
         border: none;
-        padding: 0.5rem 1rem;
+        height: 42px; /* Zelfde hoogte als upload */
+        padding: 0px !important;
+        margin-top: 0px;
       }
       .stButton button:hover {
         background-color: var(--accent) !important;
         color: #000000 !important;
       }
 
-      /* CHAT STYLING */
-      .stChatMessage { background: transparent; }
-      .stMarkdown p { color: var(--text); }
-      .chat-card .stChatMessage[data-testid="stChatMessage"] div { color: var(--text); }
+      /* --- 4. INPUT BALK --- */
+      .stTextInput input {
+        background: var(--input-bg) !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        color: var(--text) !important;
+        border-radius: 50px !important;
+        padding: 8px 20px;
+        font-size: 14px;
+      }
+      .stTextInput label { display: none; }
       
-      /* LOADING ANIMATION */
-      .bike-loader { display:flex; gap:6px; font-size:24px; margin: 4px 0 0; color: var(--muted); }
+      /* Hero tekst */
+      .hero h1 { margin: 0 0 5px; font-weight: 700; color: var(--text); font-size: 28px; }
+      .hero p { color: var(--muted); font-size: 14px; margin: 0; }
+
+      /* Chat */
+      .stChatMessage { background: transparent; padding: 0.5rem 0; }
+      .stMarkdown p { color: var(--text); font-size: 15px; line-height: 1.5; }
+      
+      /* Loader */
+      .bike-loader { display:flex; gap:6px; font-size:20px; margin: 4px 0 0; color: var(--muted); }
       .bike-loader div { animation: ride 0.9s ease-in-out infinite; }
       .bike-loader div:nth-child(2) { animation-delay: .15s; }
       .bike-loader div:nth-child(3) { animation-delay: .3s; }
       @keyframes ride { 0% { transform: translateX(0px); } 50% { transform: translateX(10px); } 100% { transform: translateX(0px); } }
-
-      /* INPUT BAR INSIDE CARD */
-      .stTextInput input {
-        background: rgba(255,255,255,0.08) !important;
-        border: 1px solid var(--border) !important;
-        color: var(--text) !important;
-        border-radius: 50px !important; /* Ronde input balk */
-        padding: 10px 20px;
-      }
-      .stTextInput label { display: none; } /* Label verbergen voor strakke look */
       
-      header { margin-bottom: 0; }
+      header { visibility: hidden; }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# --- 1. LOGO & MODEL -------------------------------------------------------
+# --- 1. CONFIGURATIE ---
 LOGO_PATH = "1.png" 
 MODEL_NAME = "gemini-2.5-flash"
 
-# --- 2. CONFIGURATIE & API ------------------------------------------------
 try:
     if "GEMINI_API_KEY" in st.secrets:
         api_key = st.secrets["GEMINI_API_KEY"].strip()
         genai.configure(api_key=api_key)
     else:
-        # Fallback voor lokaal testen als secrets file ontbreekt
         pass 
 except Exception as e:
     st.error(f"Error: {e}")
 
-# --- 3. KENNIS LADEN (PDF & DOCX) -----------------------------------------
+# --- 2. KENNIS LADEN ---
 @st.cache_resource(show_spinner=False)
 def load_all_knowledge():
     combined_text = ""
@@ -132,141 +138,118 @@ def load_all_knowledge():
 
 knowledge_base = load_all_knowledge()
 
-# --- 4. AI INSTRUCTIES ----------------------------------------------------
+# --- 3. AI SETUP ---
 SYSTEM_PROMPT = f"""
 ROL: Je bent een expert sportfysioloog van SportMetrics.
-
-BRONMATERIAAL:
-Je hebt toegang tot specifieke literatuur over trainingsleer.
-Gebruik DEZE INFORMATIE als de absolute waarheid.
-
-=== START LITERATUUR ===
+BRONMATERIAAL: Gebruik DEZE INFORMATIE als waarheid:
+===
 {knowledge_base}
-=== EINDE LITERATUUR ===
-
-BELANGRIJKE REGELS:
+===
+REGELS:
 1. SportMetrics doet GEEN lactaatmetingen (prikken), alleen ademgasanalyse.
-2. Gebruik de principes (zoals Seiler zones) zoals beschreven in de geüploade literatuur.
-3. Wees praktisch, enthousiast en gebruik bulletpoints.
+2. Gebruik de principes (zoals Seiler zones) uit de literatuur.
+3. Wees praktisch, enthousiast, gebruik bulletpoints.
 4. Geen medisch advies.
-5. Geef altijd een props aan de persoon voor de test en bedankt dat hij of zij dit bij SportMetrics heeft gedaan.
+5. Geef props aan de klant.
 """
 
 try:
-    model = genai.GenerativeModel(
-        model_name=MODEL_NAME,
-        system_instruction=SYSTEM_PROMPT,
-    )
+    model = genai.GenerativeModel(model_name=MODEL_NAME, system_instruction=SYSTEM_PROMPT)
 except:
     pass
 
-# --- 5. INITIALIZE STATE --------------------------------------------------
+# --- 4. STATE ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
-    intro = (
-        "Hoi! Ik geef antwoord op basis van mijn AI-kennis en de best beschikbare literatuur over trainingsleer.\n\n"
-        "Upload je testresultaten of stel direct een vraag!"
-    )
-    st.session_state.messages.append({"role": "assistant", "content": intro})
+    st.session_state.messages.append({
+        "role": "assistant", 
+        "content": "Hoi! Upload je testresultaten of stel direct een vraag."
+    })
 
-# Functie om input te verwerken
 def submit_question():
     user_input = st.session_state.input_field
     if user_input:
-        # Voeg user bericht toe
         st.session_state.messages.append({"role": "user", "content": user_input})
         
-        # Context ophalen
         extra_context = ""
         if "last_uploaded_text" in st.session_state:
-            extra_context = f"\n\nHIER IS HET RAPPORT VAN DE KLANT:\n{st.session_state['last_uploaded_text']}\n\n"
+            extra_context = f"\n\nRAPPORT KLANT:\n{st.session_state['last_uploaded_text']}\n\n"
 
         full_prompt = user_input + extra_context
         
-        # AI Genereren
         try:
             response = model.generate_content(full_prompt)
             st.session_state.messages.append({"role": "assistant", "content": response.text})
-        except Exception as e:
-            st.session_state.messages.append({"role": "assistant", "content": "Sorry, ik kon even geen verbinding maken met het brein."})
+        except:
+            st.session_state.messages.append({"role": "assistant", "content": "Even geen verbinding."})
         
-        # Input veld leegmaken
         st.session_state.input_field = ""
 
-# --- 6. LAYOUT OPBOUW -----------------------------------------------------
+# --- 5. LAYOUT ---
 
-# A. HERO SECTION
+# A. TITEL (Geen kader meer)
 with st.container():
     st.markdown('<div class="hero">', unsafe_allow_html=True)
-    col1, col2 = st.columns([2, 1])
-    with col1:
+    c1, c2 = st.columns([4, 1])
+    with c1:
         st.markdown("<h1>SportMetrics Coach</h1>", unsafe_allow_html=True)
         st.markdown("<p>Geen poespas, alleen data → advies.</p>", unsafe_allow_html=True)
-    with col2:
+    with c2:
         if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width=150)
+            st.image(LOGO_PATH, width=120)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# B. UPLOAD & ANALYSE SECTION (Compact)
+# B. UPLOAD + KNOP (Compact & Rond)
 with st.container():
     st.markdown('<div class="upload-card">', unsafe_allow_html=True)
     
-    # We gebruiken kolommen om de knop NAAST de upload te krijgen
-    # Col 1: Upload (Breed), Col 2: Knop (Smal)
-    c1, c2 = st.columns([3, 1], gap="small")
+    # 3 kolommen: Upload (groot), witruimte (mini), Knop (klein)
+    col_up, col_space, col_btn = st.columns([3, 0.1, 1])
     
-    with c1:
-        uploaded_file = st.file_uploader("Upload rapport", type=["pdf", "docx"], label_visibility="collapsed")
+    with col_up:
+        uploaded_file = st.file_uploader("Upload", type=["pdf", "docx"], label_visibility="collapsed")
     
-    with c2:
-        # Een beetje witruimte om de knop verticaal te centreren met de uploadbox
-        st.markdown("<div style='height: 4px'></div>", unsafe_allow_html=True)
+    with col_btn:
         analyse_click = st.button("Analyseer", use_container_width=True)
 
     if uploaded_file is not None:
         try:
-            client_pdf_text = ""
-            if uploaded_file.name.lower().endswith(".pdf"):
-                reader = pypdf.PdfReader(uploaded_file)
-                for page in reader.pages:
-                    client_pdf_text += page.extract_text() + "\n"
-            elif uploaded_file.name.lower().endswith(".docx"):
-                doc = docx.Document(uploaded_file)
-                for para in doc.paragraphs:
-                    client_pdf_text += para.text + "\n"
+            txt = ""
+            if uploaded_file.name.endswith(".pdf"):
+                r = pypdf.PdfReader(uploaded_file)
+                for p in r.pages: txt += p.extract_text() + "\n"
+            elif uploaded_file.name.endswith(".docx"):
+                d = docx.Document(uploaded_file)
+                for p in d.paragraphs: txt += p.text + "\n"
             
-            st.session_state["last_uploaded_text"] = client_pdf_text
-            st.toast("Rapport ingeladen! Klaar voor analyse.", icon="✅")
+            st.session_state["last_uploaded_text"] = txt
+            st.toast("Bestand ontvangen", icon="✅")
         except:
-            st.error("Kon bestand niet lezen.")
+            pass
 
+    # DE FIX VOOR DE ERROR: Alles op 1 regel of triple quotes
     if analyse_click and "last_uploaded_text" in st.session_state:
-        # Trigger een analyse prompt als men op de knop drukt
-        # DEZE REGEL VEROORZAAKTE DE FOUT, NU GECORRIGEERD:
         st.session_state.input_field = "Analyseer mijn geüploade zones en maak een samenvatting."
         submit_question()
         st.rerun()
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# C. CHAT INTERFACE IN BLAUWE KADER
+# C. CHAT & INPUT
 with st.container():
     st.markdown('<div class="chat-card">', unsafe_allow_html=True)
     
-    # 1. History tonen
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    for m in st.session_state.messages:
+        with st.chat_message(m["role"]):
+            st.markdown(m["content"])
+            
+    st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
     
-    # 2. Input balk IN het kader (dus niet st.chat_input, maar st.text_input)
-    st.markdown("---") # Klein lijntje voor scheiding
     st.text_input(
-        "Typ je vraag...", 
+        "Vraag", 
         key="input_field", 
         on_change=submit_question, 
-        placeholder="Stel je vraag of zeg 'Maak mijn zones'...",
+        placeholder="Typ je vraag...",
         label_visibility="collapsed"
     )
-    st.caption("Druk op Enter om te versturen.")
-    
     st.markdown('</div>', unsafe_allow_html=True)
