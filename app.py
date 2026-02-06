@@ -12,93 +12,111 @@ st.set_page_config(
     layout="wide",
 )
 
-# Global look & feel
+# --- GLOBAL STYLING (CLEAN LIGHT MODE / SOFT HIGH CONTRAST) ---
 st.markdown(
     r"""
     <style>
       :root {
-        --bg: linear-gradient(145deg, #061428 0%, #0a2f4a 55%, #0c4c63 100%);
-        --text: #eef5ff;
-        --muted: #b9c6da;
-        --accent: #7be0ff;
-        --input-bg: rgba(255, 255, 255, 0.08);
-      }
-      body, .stApp { background: var(--bg); color: var(--text); font-family: "Inter", sans-serif; }
-      .block-container { padding: 2rem 2rem; max-width: 800px; }
-      
-      /* --- 1. BALKEN WEGHALEN (TRANSPARANT) --- */
-      /* Dit zorgt ervoor dat de donkere blokken onzichtbaar worden */
-      .hero, .upload-card, .chat-card {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0.5rem 0;
-        margin-bottom: 0.5rem;
+        /* Kleurenpalet: Soft High Contrast */
+        --bg-color: #F4F6F9;       /* Zachte lichtgrijze achtergrond voor de hele pagina */
+        --card-bg: #FFFFFF;        /* Puur wit voor de 'balken' (containers) */
+        --text-color: #1E1E1E;     /* Zeer donkergrijs (beter dan puur zwart) */
+        --muted-color: #666666;    /* Voor subtiele teksten */
+        --accent-color: #2E86C1;   /* Professioneel blauw voor accenten */
+        --border-color: #E0E0E0;   /* Subtiele lijntjes */
       }
 
-      /* --- 2. UPLOAD KNOP SUPER COMPACT & ROND --- */
+      /* Algemene Pagina Settings */
+      body, .stApp { 
+          background-color: var(--bg-color); 
+          color: var(--text-color); 
+          font-family: "Inter", sans-serif; 
+      }
+      
+      .block-container { 
+          padding: 2rem 1rem; 
+          max-width: 800px; 
+      }
+      
+      /* --- 1. DE 'WITTE BALKEN' (CONTAINERS) --- */
+      /* Dit creëert de witte blokken waar de content in leeft */
+      .hero, .upload-card, .chat-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03); /* Heel subtiel schaduwtje voor diepte */
+      }
+
+      /* --- 2. HERO SECTIE --- */
+      .hero h1 { 
+          margin: 0 0 5px; 
+          font-weight: 800; 
+          color: var(--text-color); 
+          font-size: 26px; 
+          letter-spacing: -0.5px;
+      }
+      .hero p { 
+          color: var(--muted-color); 
+          font-size: 15px; 
+          margin: 0; 
+      }
+
+      /* --- 3. COMPACTE UPLOAD KNOPPEN --- */
       .stFileUploader { padding-top: 0px; }
-      .stFileUploader label { display: none; } /* Label 'Upload rapport' weg */
+      .stFileUploader label { display: none; }
       
       .stFileUploader div[data-testid="stFileDropzone"] { 
-        padding: 4px 10px !important; /* Heel weinig ruimte binnenin */
-        border-radius: 50px; /* Pilvorm */
-        border: 1px solid rgba(255,255,255,0.2);
-        background: var(--input-bg);
+        padding: 4px 10px !important;
+        border-radius: 8px;
+        border: 1px dashed var(--accent-color);
+        background: #F8FBFF; /* Heel lichtblauw tintje */
         min-height: 0px !important;
-        height: 42px; /* Vaste kleine hoogte */
+        height: 48px;
         align-items: center;
         justify-content: center;
       }
-      
-      /* Tekst binnen upload kleiner */
-      .stFileUploader div[data-testid="stFileDropzone"] div { font-size: 14px; gap: 5px; }
-      .stFileUploader small { display: none; } /* 'Limit 200MB' tekst weg */
-      .stFileUploader button { display: none; } /* 'Browse files' knop weg, dropzone is genoeg */
+      .stFileUploader div[data-testid="stFileDropzone"] div { font-size: 14px; color: var(--accent-color); }
+      .stFileUploader small { display: none; }
+      .stFileUploader button { display: none; }
 
-      /* --- 3. ANALYSEER KNOP --- */
+      /* --- 4. ANALYSEER KNOP (High Visibility) --- */
       .stButton button { 
         width: 100%; 
-        border-radius: 50px !important;
-        background-color: #eef5ff !important; 
-        color: #000000 !important;
+        border-radius: 8px !important;
+        background-color: var(--text-color) !important; /* Donkere knop */
+        color: #FFFFFF !important; /* Witte tekst */
         font-weight: 600;
         font-size: 14px;
         border: none;
-        height: 42px; /* Zelfde hoogte als upload */
-        padding: 0px !important;
+        height: 48px; /* Match height met upload */
         margin-top: 0px;
+        transition: transform 0.1s ease;
       }
       .stButton button:hover {
-        background-color: var(--accent) !important;
-        color: #000000 !important;
+        background-color: var(--accent-color) !important;
+        transform: scale(1.01);
       }
 
-      /* --- 4. INPUT BALK --- */
+      /* --- 5. INPUT VELD (Chat) --- */
       .stTextInput input {
-        background: var(--input-bg) !important;
-        border: 1px solid rgba(255,255,255,0.2) !important;
-        color: var(--text) !important;
-        border-radius: 50px !important;
-        padding: 8px 20px;
-        font-size: 14px;
+        background: #FFFFFF !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--text-color) !important;
+        border-radius: 8px !important;
+        padding: 10px 15px;
+        font-size: 15px;
+      }
+      .stTextInput input:focus {
+        border-color: var(--accent-color) !important;
+        box-shadow: 0 0 0 2px rgba(46, 134, 193, 0.1);
       }
       .stTextInput label { display: none; }
-      
-      /* Hero tekst */
-      .hero h1 { margin: 0 0 5px; font-weight: 700; color: var(--text); font-size: 28px; }
-      .hero p { color: var(--muted); font-size: 14px; margin: 0; }
 
-      /* Chat */
+      /* --- 6. CHAT BERICHTEN --- */
       .stChatMessage { background: transparent; padding: 0.5rem 0; }
-      .stMarkdown p { color: var(--text); font-size: 15px; line-height: 1.5; }
-      
-      /* Loader */
-      .bike-loader { display:flex; gap:6px; font-size:20px; margin: 4px 0 0; color: var(--muted); }
-      .bike-loader div { animation: ride 0.9s ease-in-out infinite; }
-      .bike-loader div:nth-child(2) { animation-delay: .15s; }
-      .bike-loader div:nth-child(3) { animation-delay: .3s; }
-      @keyframes ride { 0% { transform: translateX(0px); } 50% { transform: translateX(10px); } 100% { transform: translateX(0px); } }
+      .stChatMessage[data-testid="stChatMessageAvatarUser"] { display: none; } /* Optioneel: verberg user avatar voor strakker beeld */
       
       header { visibility: hidden; }
     </style>
@@ -189,7 +207,7 @@ def submit_question():
 
 # --- 5. LAYOUT ---
 
-# A. TITEL (Geen kader meer, direct op achtergrond)
+# A. TITEL (In een witte balk)
 with st.container():
     st.markdown('<div class="hero">', unsafe_allow_html=True)
     c1, c2 = st.columns([4, 1])
@@ -198,21 +216,23 @@ with st.container():
         st.markdown("<p>Geen poespas, alleen data → advies.</p>", unsafe_allow_html=True)
     with c2:
         if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width=120)
+            st.image(LOGO_PATH, width=100)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# B. UPLOAD + KNOP (Compact & Rond)
+# B. UPLOAD + KNOP (In een witte balk)
 with st.container():
     st.markdown('<div class="upload-card">', unsafe_allow_html=True)
     
-    # 3 kolommen: Upload (groot), witruimte (mini), Knop (klein)
-    col_up, col_space, col_btn = st.columns([3, 0.1, 1])
+    # Layout optimalisatie voor mobiel/laptop
+    # We gebruiken st.columns. Op mobiel worden deze automatisch gestacked door Streamlit, 
+    # maar we houden de verhouding simpel voor een strakke lijn op desktop.
+    col_up, col_btn = st.columns([3, 1], gap="small")
     
     with col_up:
         uploaded_file = st.file_uploader("Upload", type=["pdf", "docx"], label_visibility="collapsed")
     
     with col_btn:
-        analyse_click = st.button("Analyseer", use_container_width=True)
+        analyse_click = st.button("Analyseer Bestand", use_container_width=True)
 
     if uploaded_file is not None:
         try:
@@ -229,7 +249,6 @@ with st.container():
         except:
             pass
 
-    # DE FIX: Dit staat nu op 1 regel om de SyntaxError te voorkomen
     if analyse_click and "last_uploaded_text" in st.session_state:
         st.session_state.input_field = "Analyseer mijn geüploade zones en maak een samenvatting."
         submit_question()
@@ -237,21 +256,23 @@ with st.container():
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# C. CHAT & INPUT
+# C. CHAT & INPUT (In een witte balk)
 with st.container():
     st.markdown('<div class="chat-card">', unsafe_allow_html=True)
     
+    # Weergave berichten
     for m in st.session_state.messages:
         with st.chat_message(m["role"]):
             st.markdown(m["content"])
             
-    st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
     
+    # Input veld
     st.text_input(
         "Vraag", 
         key="input_field", 
         on_change=submit_question, 
-        placeholder="Typ je vraag...",
+        placeholder="Typ je vraag over de test...",
         label_visibility="collapsed"
     )
     st.markdown('</div>', unsafe_allow_html=True)
