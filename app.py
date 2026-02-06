@@ -127,8 +127,20 @@ if prompt:
 
     try:
         with st.chat_message("assistant"):
-            response = model.generate_content(full_prompt_for_ai)
-            st.markdown(response.text)
-            st.session_state.messages.append({"role": "assistant", "content": response.text})
-    except Exception as e:
-        st.error(f"De AI reageert niet: {e}")
+            # 1. ANIMATIE: Fietsjes die van links naar rechts bewegen
+            loading_placeholder = st.empty()
+            loading_placeholder.markdown("""
+            <div style="width: 100%; overflow: hidden; padding: 10px 0;">
+                <div style="display: inline-block; white-space: nowrap; animation: moveRight 3s linear infinite;">
+                    🚴‍♂️ 💨 🚴‍♂️ 💨 🚴‍♂️
+                </div>
+            </div>
+            <style>
+                @keyframes moveRight {
+                    0% { transform: translateX(-20%); }
+                    100% { transform: translateX(120%); }
+                }
+            </style>
+            """, unsafe_allow_html=True)
+
+            # Antwoord genereren
