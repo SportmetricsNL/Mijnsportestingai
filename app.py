@@ -27,6 +27,7 @@ st.markdown(
       .block-container { padding: 2rem 2rem; max-width: 800px; }
       
       /* --- 1. BALKEN WEGHALEN (TRANSPARANT) --- */
+      /* Dit zorgt ervoor dat de donkere blokken onzichtbaar worden */
       .hero, .upload-card, .chat-card {
         background: transparent !important;
         border: none !important;
@@ -47,6 +48,7 @@ st.markdown(
         min-height: 0px !important;
         height: 42px; /* Vaste kleine hoogte */
         align-items: center;
+        justify-content: center;
       }
       
       /* Tekst binnen upload kleiner */
@@ -187,7 +189,7 @@ def submit_question():
 
 # --- 5. LAYOUT ---
 
-# A. TITEL (Geen kader meer)
+# A. TITEL (Geen kader meer, direct op achtergrond)
 with st.container():
     st.markdown('<div class="hero">', unsafe_allow_html=True)
     c1, c2 = st.columns([4, 1])
@@ -227,7 +229,7 @@ with st.container():
         except:
             pass
 
-    # DE FIX VOOR DE ERROR: Alles op 1 regel of triple quotes
+    # DE FIX: Dit staat nu op 1 regel om de SyntaxError te voorkomen
     if analyse_click and "last_uploaded_text" in st.session_state:
         st.session_state.input_field = "Analyseer mijn geüploade zones en maak een samenvatting."
         submit_question()
