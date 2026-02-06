@@ -14,10 +14,10 @@ try:
         api_key = st.secrets["GEMINI_API_KEY"].strip()
         genai.configure(api_key=api_key)
     else:
-        st.error("Geen API Key gevonden.")
+        st.error("Geen API Key gevonden. Voeg deze toe aan secrets.toml")
         st.stop()
 except Exception as e:
-    st.error(f"Error: {e}")
+    st.error(f"Error bij configureren API: {e}")
     st.stop()
 
 # --- 2. KENNIS LADEN (PDF & DOCX) ---
@@ -67,7 +67,7 @@ BELANGRIJKE REGELS:
 2. Gebruik de principes (zoals Seiler zones) zoals beschreven in de geüploade literatuur.
 3. Wees praktisch, enthousiast en gebruik bulletpoints.
 4. Geen medisch advies.
-5. Geef altijd een props aan de persoon voor de test en bedanken dart hij of zij dat bij sport metrics heeft gedaan
+5. Geef altijd een props aan de persoon voor de test en bedank dat hij of zij dat bij SportMetrics heeft gedaan.
 """
 
 # Model laden
@@ -84,63 +84,5 @@ except Exception as e:
 if "messages" not in st.session_state:
     st.session_state.messages = []
     
-    # HIER IS DE AANGEPASTE BEGROETING:
-    intro = "Hoi! Ik geef antwoord op basis van mijn AI-kennis en de best beschikbare literatuur over trainingsleer. \n\nUpload je testresultaten of stel direct een vraag!"
-    
-    st.session_state.messages.append({"role": "assistant", "content": intro})
-
-# -- MOBIELVRIENDELIJKE UPLOAD KNOP VOOR KLANTEN --
-with st.expander("📄 Klik hier om een PDF Rapport te uploaden", expanded=False):
-    uploaded_file = st.file_uploader("Kies je testresultaten", type="pdf", key="mobile_uploader")
-    
-    if uploaded_file is not None:
-        try:
-            reader = pypdf.PdfReader(uploaded_file)
-            client_pdf_text = ""
-            for page in reader.pages:
-                client_pdf_text += page.extract_text() + "\n"
-            
-            st.session_state['last_uploaded_text'] = client_pdf_text
-            st.success("✅ Rapport ontvangen! Typ hieronder je vraag.")
-        except Exception as e:
-            st.error(f"Fout bij lezen rapport: {e}")
-
-# Toon geschiedenis
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-# Input veld
-prompt = st.chat_input("Stel je vraag of zeg 'Maak mijn zones'...")
-
-if prompt:
-    extra_context = ""
-    if 'last_uploaded_text' in st.session_state:
-        extra_context = f"\n\nHIER IS HET RAPPORT VAN DE KLANT:\n{st.session_state['last_uploaded_text']}\n\n"
-        del st.session_state['last_uploaded_text']
-
-    full_prompt_for_ai = prompt + extra_context
-
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    try:
-        with st.chat_message("assistant"):
-            # 1. ANIMATIE: Fietsjes die van links naar rechts bewegen
-            loading_placeholder = st.empty()
-            loading_placeholder.markdown("""
-            <div style="width: 100%; overflow: hidden; padding: 10px 0;">
-                <div style="display: inline-block; white-space: nowrap; animation: moveRight 3s linear infinite;">
-                    🚴‍♂️ 💨 🚴‍♂️ 💨 🚴‍♂️
-                </div>
-            </div>
-            <style>
-                @keyframes moveRight {
-                    0% { transform: translateX(-20%); }
-                    100% { transform: translateX(120%); }
-                }
-            </style>
-            """, unsafe_allow_html=True)
-
-            # Antwoord genereren
+    # Begroeting
+    intro = "Hoi! Ik geef antwoord op basis van mijn AI-kennis en de best beschikbare literatuur over trainingsleer. \n\nUpload je testresult
