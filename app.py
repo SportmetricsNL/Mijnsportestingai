@@ -12,49 +12,49 @@ st.set_page_config(
     layout="wide",
 )
 
-# Global look & feel
+# Global look & feel (strak, blauwe achtergrond)
 st.markdown(
     r"""
     <style>
       :root {
-        --bg: linear-gradient(135deg, #0b1229 0%, #0e1f40 50%, #0b5c6f 100%);
-        --card: rgba(255, 255, 255, 0.06);
-        --glass: rgba(255, 255, 255, 0.08);
-        --border: rgba(255, 255, 255, 0.15);
-        --accent: #3ce37b;
-        --accent-2: #42c5f5;
-        --text: #e8f4ff;
-        --muted: #9fb3d9;
+        --bg: linear-gradient(145deg, #061428 0%, #0a2f4a 55%, #0c4c63 100%);
+        --card: rgba(255, 255, 255, 0.05);
+        --border: rgba(255, 255, 255, 0.12);
+        --text: #eef5ff;
+        --muted: #b9c6da;
+        --accent: #7be0ff;
       }
-      .stApp { background: var(--bg); color: var(--text); }
-      .block-container { padding: 1.5rem 2.5rem 3rem; max-width: 1100px; }
-      .hero {
+      body, .stApp { background: var(--bg); color: var(--text); font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .block-container { padding: 1.5rem 2rem 2.5rem; max-width: 1100px; }
+      .hero, .upload-card, .chat-card {
         background: var(--card);
         border: 1px solid var(--border);
-        border-radius: 18px;
-        padding: 1.25rem 1.5rem;
-        box-shadow: 0 15px 50px rgba(0,0,0,0.35);
-      }
-      .hero h1 { margin-bottom: .3rem; color: var(--text); }
-      .hero p { color: var(--muted); font-size: 0.95rem; }
-      .badge { display:inline-block; padding:6px 10px; border-radius:999px; background:var(--glass); color:var(--accent); border:1px solid var(--border); font-size:0.8rem; }
-      .cta-btn button { width:100%; background:linear-gradient(120deg,var(--accent),var(--accent-2)); color:#041021; border:none; }
-      .upload-card, .chat-card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 16px;
+        border-radius: 12px;
         padding: 1rem 1.1rem;
-        box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+        box-shadow: 0 20px 70px rgba(0,0,0,0.25);
       }
+      .hero h1 { margin: 0 0 .35rem; font-weight: 700; color: var(--text); font-size: 32px; white-space: nowrap; }
+      @media (max-width: 760px) { .hero h1 { white-space: normal; font-size: 26px; } }
+      .hero p { color: var(--muted); font-size: 0.95rem; margin: 0.1rem 0 0; }
+      .cta-btn button { width:100%; background: var(--text); color: #041021; border:none; border-radius:12px; padding: 0.65rem 0; }
       .stExpander, .stFileUploader { color: var(--text); }
       .stChatMessage { background: transparent; }
       .stMarkdown p { color: var(--text); }
       .chat-card .stChatMessage[data-testid="stChatMessage"] div { color: var(--text); }
-      .bike-loader { display:flex; gap:10px; font-size:30px; margin: 6px 0 2px; }
+      .bike-loader { display:flex; gap:6px; font-size:24px; margin: 4px 0 0; color: var(--muted); }
       .bike-loader div { animation: ride 0.9s ease-in-out infinite; }
       .bike-loader div:nth-child(2) { animation-delay: .15s; }
       .bike-loader div:nth-child(3) { animation-delay: .3s; }
-      @keyframes ride { 0% { transform: translateX(0px); } 50% { transform: translateX(12px); } 100% { transform: translateX(0px); } }
+      @keyframes ride { 0% { transform: translateX(0px); } 50% { transform: translateX(10px); } 100% { transform: translateX(0px); } }
+      /* input bar in same blue zone */
+      div[data-testid="stChatInput"] { background: transparent; }
+      div[data-testid="stChatInput"] textarea { background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--text); border-radius: 14px; }
+      /* file drop smaller & round */
+      .stFileUploader div[data-testid="stFileDropzone"] { padding: 0.55rem 0.8rem; border-radius: 12px; }
+      .stFileUploader button { border-radius: 10px !important; padding: 0.4rem 0.85rem !important; }
+      /* containers narrower for upload row on wide screens */
+      @media (min-width: 1024px) { .upload-row { max-width: 820px; } }
+      header { margin-bottom: 0; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -130,35 +130,33 @@ except Exception as e:
 # --- 5. HERO --------------------------------------------------------------
 hero = st.container()
 with hero:
-    col1, col2 = st.columns([1.7, 1.1])
+    col1, col2 = st.columns([1.5, 1])
     with col1:
-        st.markdown("<span class='badge'>SportMetrics AI Coach</span>", unsafe_allow_html=True)
-        st.markdown("<h1>🚴‍♂️ Jouw Wieler & Hardloop Expert</h1>", unsafe_allow_html=True)
-        st.markdown("""
-        Geef direct trainingsadvies op basis van je eigen rapporten en de beste literatuur.
-        Upload je testresultaten of stel je vraag, wij vertalen het naar heldere zones en acties.
-        """)
-        st.write("‣ Praktisch en to-the-point · ‣ Seiler zones · ‣ Geen medisch advies · ‣ Altijd props voor jouw effort")
+        st.markdown("<h1>SportMetrics Wieler & Hardloop Coach</h1>", unsafe_allow_html=True)
+        st.markdown(
+            "<p>Ik ben een AI-model: ik geef zo goed mogelijk advies op basis van de beste literatuur, no-nonsense, praktisch en to the point. Geen medisch advies; alles dankzij jouw inspanningstest bij SportMetrics.</p>",
+            unsafe_allow_html=True,
+        )
+        st.caption("Geen poespas, alleen data → advies.")
     with col2:
         if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width=260)
+            st.image(LOGO_PATH, width=200)
         else:
-            st.info("Upload je logo als '1.png' in dezelfde map om het hier te tonen.")
+            st.info("Plaats je logo als '1.png' in de map om het hier te tonen.")
 
 # --- 6. UPLOAD ------------------------------------------------------------
 upload_card = st.container()
 with upload_card:
-    st.markdown("<div class='upload-card'>", unsafe_allow_html=True)
+    st.markdown("<div class='upload-card upload-row'>", unsafe_allow_html=True)
     col_u1, col_u2 = st.columns([1.4, 1])
     with col_u1:
-        st.subheader("📄 Upload je rapport")
-        st.caption("PDF of DOCX, alles blijft lokaal.")
-        uploaded_file = st.file_uploader("Kies je testresultaten", type=["pdf", "docx"], label_visibility="collapsed")
+        st.subheader("Upload rapport")
+        uploaded_file = st.file_uploader("Kies PDF of DOCX", type=["pdf", "docx"], label_visibility="collapsed")
     with col_u2:
         st.markdown("<div class='cta-btn'>", unsafe_allow_html=True)
-        st.button("🚀 Start analyse", use_container_width=True)
+        st.button("Analyseer", use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
-        st.caption("Tip: vraag 'Maak mijn zones' voor een kort overzicht.")
+        st.caption("Tip: zeg 'Maak mijn zones'.")
     st.markdown("</div>", unsafe_allow_html=True)
 
 if uploaded_file is not None:
